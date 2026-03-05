@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DJAMBICEIRO — Filmmaker, Editor & Colorist. Maputo, Moçambique." />
+  <title>DJAMBICEIRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f6f4f1;
+      --fg: #0e0e0e;
+      --muted: #888;
+      --border: rgba(0,0,0,0.09);
+      --sans: 'DM Sans', sans-serif;
+      --serif: 'DM Serif Display', serif;
+    }
+    html { font-size: 16px; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; cursor: pointer; }
+    img { display: block; max-width: 100%; }
+    button { background: none; border: none; cursor: pointer; font-family: var(--sans); color: inherit; }
+
+    /* NAV */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 58px; background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .nav-logo { cursor: pointer; }
+    .nav-logo img { height: 20px; width: auto; display: block; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--fg); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+    .nav-hamburger span { display: block; height: 1.5px; background: var(--fg); transition: all 0.3s; }
+    .nav-hamburger span:nth-child(1) { width: 22px; }
+    .nav-hamburger span:nth-child(2) { width: 14px; }
+    .nav-hamburger span:nth-child(3) { width: 22px; }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      #nav { padding: 0 20px; }
+    }
+
+    /* MOBILE MENU */
+    #mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 190;
+      background: var(--bg); flex-direction: column;
+      align-items: center; justify-content: center; gap: 40px;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a { font-family: var(--serif); font-size: 2.6rem; font-style: italic; }
+
+    /* VIEWS */
+    .view { display: none; padding-top: 58px; min-height: 100vh; }
+    .view.active { display: block; }
+
+    /* HOME */
+    #view-home { display: none; flex-direction: column; }
+    #view-home.active { display: flex; }
+
+    .home-logo {
+      display: flex; align-items: center; justify-content: center;
+      padding: 56px 32px 48px; border-bottom: 1px solid var(--border);
+    }
+    .home-logo img { width: 320px; height: auto; opacity: 0.9; }
+
+    .home-cats { display: flex; flex: 1; }
+
+    .cat-item {
+      flex: 1; position: relative; cursor: pointer;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 40px 36px; min-height: 380px;
+      background: var(--bg); transition: background 0.3s ease;
+    }
+    .cat-item:last-child { border-right: none; }
+    .cat-item:hover { background: #dedad5; }
+    .cat-item:nth-child(1) { background: #edeae6; }
+    .cat-item:nth-child(2) { background: #e8e5e1; }
+    .cat-item:nth-child(3) { background: #e3e0dc; }
+    .cat-item:nth-child(1):hover,
+    .cat-item:nth-child(2):hover,
+    .cat-item:nth-child(3):hover { background: #dedad5; }
+
+    .cat-num { position: absolute; top: 36px; left: 36px; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.16em; }
+    .cat-title { font-family: var(--serif); font-size: clamp(2rem, 3.2vw, 3rem); font-weight: 400; line-height: 1.05; margin-bottom: 12px; }
+    .cat-title em { font-style: italic; color: var(--muted); }
+    .cat-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.7; max-width: 200px; font-weight: 300; }
+    .cat-arrow { display: inline-block; margin-top: 28px; font-size: 1.1rem; color: var(--muted); transition: transform 0.3s, color 0.2s; }
+    .cat-item:hover .cat-arrow { transform: translateX(6px); color: var(--fg); }
+
+    @media (max-width: 720px) {
+      .home-cats { flex-direction: column; }
+      .cat-item { min-height: 200px; border-right: none; border-bottom: 1px solid var(--border); padding: 28px 24px; }
+      .cat-item:last-child { border-bottom: none; }
+      .cat-num { top: 24px; left: 24px; }
+      .home-logo img { width: 220px; }
+      .home-logo { padding: 36px 24px 32px; }
+    }
+
+    /* WORK GRID */
+    #view-work { padding: 0; }
+    .work-header { padding: 36px 32px 28px; border-bottom: 1px solid var(--border); }
+    .work-back { font-size: 0.72rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; transition: color 0.2s; }
+    .work-back:hover { color: var(--fg); }
+    .work-cat-title { font-family: var(--serif); font-size: clamp(1.6rem, 3.5vw, 2.8rem); font-weight: 400; }
+    .work-cat-title em { font-style: italic; color: var(--muted); }
+
+    .projects-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; padding: 2px; }
+    @media (max-width: 880px) { .projects-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 520px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .work-header { padding: 28px 20px 22px; }
+    }
+
+    .project-card { position: relative; overflow: hidden; background: #e0ddd9; cursor: pointer; display: block; }
+    .project-card-thumb { aspect-ratio: 16/10; overflow: hidden; position: relative; }
+    .project-card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; display: block; }
+    .project-card:hover .project-card-thumb img { transform: scale(1.04); }
+    .project-card-hover {
+      position: absolute; inset: 0;
+      background: rgba(14,14,14,0.7);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s ease; padding: 20px;
+    }
+    .project-card:hover .project-card-hover { opacity: 1; }
+    .project-card-hover-title { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.6rem); color: #fff; text-align: center; line-height: 1.2; }
+    .project-card-info { padding: 12px 14px 15px; }
+    .project-card-title { font-size: 0.8rem; font-weight: 500; }
+    .project-card-sub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+    /* PROJECT */
+    #view-project { padding: 48px 32px 80px; max-width: 900px; }
+    .project-back { font-size: 0.72rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; margin-bottom: 36px; transition: color 0.2s; cursor: pointer; }
+    .project-back:hover { color: var(--fg); }
+    .project-video-wrap { width: 100%; aspect-ratio: 16/9; background: #111; margin-bottom: 32px; overflow: hidden; }
+    .project-video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+    .video-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a1a; color: rgba(255,255,255,0.2); font-size: 0.75rem; letter-spacing: 0.1em; }
+    .project-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .project-cat-tag { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--border); padding: 4px 10px; }
+    .project-year { font-size: 0.68rem; color: var(--muted); }
+    .project-title { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 400; line-height: 1.1; margin-bottom: 16px; }
+    .project-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.85; max-width: 560px; font-weight: 300; }
+    @media (max-width: 520px) { #view-project { padding: 32px 16px 60px; } }
+
+    /* ABOUT */
+    #view-about { padding: 64px 32px 80px; max-width: 640px; }
+    .about-name { font-family: var(--serif); font-size: clamp(2.6rem, 7vw, 4.8rem); font-weight: 400; line-height: 1.05; margin-bottom: 32px; }
+    .about-name em { font-style: italic; color: var(--muted); }
+    .about-bio { font-size: 0.92rem; font-weight: 300; line-height: 1.9; margin-bottom: 44px; max-width: 480px; }
+    .info-table { border-top: 1px solid var(--border); }
+    .info-row { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 20px; }
+    .info-label { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; flex-shrink: 0; }
+    .info-value { font-size: 0.8rem; text-align: right; }
+    .info-value a { transition: color 0.2s; }
+    .info-value a:hover { color: var(--muted); }
+    @media (max-width: 520px) { #view-about { padding: 48px 20px 60px; } }
+
+    /* CONTACT */
+    #view-contact { padding: 64px 32px 80px; max-width: 560px; }
+    .contact-title { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 400; line-height: 1.1; margin-bottom: 44px; }
+    .contact-title em { font-style: italic; color: var(--muted); }
+    .contact-table { border-top: 1px solid var(--border); margin-bottom: 44px; }
+    .contact-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
+    .contact-row:hover { opacity: 0.5; }
+    .contact-label { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .contact-val-wrap { display: flex; align-items: center; gap: 10px; }
+    .contact-val { font-size: 0.82rem; }
+    .contact-arrow { font-size: 0.78rem; color: var(--muted); }
+    .socials { display: flex; gap: 20px; flex-wrap: wrap; }
+    .social-link { font-size: 0.76rem; color: var(--muted); border-bottom: 1px solid transparent; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+    .social-link:hover { color: var(--fg); border-color: var(--fg); }
+    @media (max-width: 520px) { #view-contact { padding: 48px 20px 60px; } }
+
+    /* FOOTER */
+    #footer { padding: 20px 32px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    #footer span { font-size: 0.66rem; color: var(--muted); letter-spacing: 0.04em; }
+    @media (max-width: 520px) { #footer { padding: 16px 20px; } } */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Entrada de cada view */
+    .view.active { animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+    #view-home.active { animation: fadeIn 0.4s ease both; }
+
+    /* Logo da home entra com scale */
+    .home-logo img { animation: scaleIn 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* Categorias entram em cascata */
+    .home-cats .cat-item:nth-child(1) { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
+    .home-cats .cat-item:nth-child(2) { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+    .home-cats .cat-item:nth-child(3) { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s both; }
+
+    /* Click ripple nas categorias */
+    .cat-item { overflow: hidden; }
+    .cat-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background 0.15s ease;
+      pointer-events: none;
+    }
+    .cat-item:active::after { background: rgba(0,0,0,0.06); }
+
+    /* Cards entram em cascata */
+    .project-card {
+      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .project-card:nth-child(1) { animation-delay: 0.04s; }
+    .project-card:nth-child(2) { animation-delay: 0.10s; }
+    .project-card:nth-child(3) { animation-delay: 0.16s; }
+    .project-card:nth-child(4) { animation-delay: 0.22s; }
+    .project-card:nth-child(5) { animation-delay: 0.28s; }
+    .project-card:nth-child(6) { animation-delay: 0.34s; }
+    .project-card:nth-child(7) { animation-delay: 0.40s; }
+    .project-card:nth-child(8) { animation-delay: 0.46s; }
+    .project-card:nth-child(9) { animation-delay: 0.52s; }
+
+    /* Click nas cards — leve press */
+    .project-card { transition: transform 0.15s ease; }
+    .project-card:active { transform: scale(0.97); }
+
+    /* Página de projeto — elementos entram em sequência */
+    #view-project.active .project-video-wrap {
+      animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.05s both;
+    }
+    #view-project.active .project-meta {
+      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.18s both;
+    }
+    #view-project.active .project-title {
+      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.25s both;
+    }
+    #view-project.active .project-desc {
+      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.32s both;
+    }
+
+    /* About e Contact — linhas da tabela entram em cascata */
+    #view-about.active .info-row:nth-child(1) { animation: fadeUp 0.4s ease 0.10s both; }
+    #view-about.active .info-row:nth-child(2) { animation: fadeUp 0.4s ease 0.18s both; }
+    #view-about.active .info-row:nth-child(3) { animation: fadeUp 0.4s ease 0.26s both; }
+    #view-about.active .info-row:nth-child(4) { animation: fadeUp 0.4s ease 0.34s both; }
+    #view-contact.active .contact-row:nth-child(1) { animation: fadeUp 0.4s ease 0.10s both; }
+    #view-contact.active .contact-row:nth-child(2) { animation: fadeUp 0.4s ease 0.18s both; }
+    #view-contact.active .socials { animation: fadeUp 0.4s ease 0.30s both; }
+
+    /* Seta do back — slide ao hover */
+    .work-back, .project-back {
+      transition: color 0.2s, transform 0.2s ease;
+    }
+    .work-back:hover, .project-back:hover {
+      transform: translateX(-3px);
+    }
+
+    /* Nav links — underline animado */
+    .nav-links a { position: relative; }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: var(--fg);
+      transition: width 0.25s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { width: 100%; }
+
+    /* Footer fade in */
+    #footer { animation: fadeIn 0.6s ease 0.3s both; }
+
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <span class="nav-logo" onclick="go('home')">
+    <img src="img/LOGO_WIDE.webp" alt="DJAMBICEIRO" />
+  </span>
+  <ul class="nav-links">
+    <li><a onclick="go('home')" id="nl-work">Work</a></li>
+    <li><a onclick="go('about')" id="nl-about">About</a></li>
+    <li><a onclick="go('contact')" id="nl-contact">Contact</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="mobile-menu">
+  <a onclick="go('home'); closeMobile();">Work</a>
+  <a onclick="go('about'); closeMobile();">About</a>
+  <a onclick="go('contact'); closeMobile();">Contact</a>
+</div>
+
+<!-- HOME -->
+<div class="view" id="view-home">
+  <div class="home-logo">
+    <img src="img/LOGO_WIDE.webp" alt="DJAMBICEIRO" />
+  </div>
+  <div class="home-cats">
+    <div class="cat-item" onclick="go('work','agencia')">
+      <span class="cat-num">01</span>
+      <div>
+        <h2 class="cat-title">Agência</h2>
+        <p class="cat-desc">Trabalhos produzidos em contexto de agência — marcas, campanhas e projetos comerciais.</p>
+        <span class="cat-arrow">→</span>
+      </div>
+    </div>
+    <div class="cat-item" onclick="go('work','solo')">
+      <span class="cat-num">02</span>
+      <div>
+        <h2 class="cat-title"><em>Solo</em></h2>
+        <p class="cat-desc">Projetos autorais e independentes — direção, edição e cor sob a marca DJAMBICEIRO.</p>
+        <span class="cat-arrow">→</span>
+      </div>
+    </div>
+    <div class="cat-item" onclick="go('work','content')">
+      <span class="cat-num">03</span>
+      <div>
+        <h2 class="cat-title">Content<br><em>Digital</em></h2>
+        <p class="cat-desc">Vídeos e conteúdo para redes sociais, plataformas digitais e comunicação online.</p>
+        <span class="cat-arrow">→</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORK GRID -->
+<div class="view" id="view-work">
+  <div class="work-header">
+    <div class="work-back" onclick="go('home')">← Work</div>
+    <h2 class="work-cat-title" id="work-cat-title"></h2>
+  </div>
+  <div class="projects-grid" id="projects-grid"></div>
+</div>
+
+<!-- PROJECT -->
+<div class="view" id="view-project">
+  <div class="project-back" id="project-back">← <span id="project-back-label"></span></div>
+  <div class="project-video-wrap" id="project-video"></div>
+  <div class="project-meta">
+    <span class="project-cat-tag" id="project-cat"></span>
+    <span class="project-year" id="project-year"></span>
+  </div>
+  <h1 class="project-title" id="project-title"></h1>
+  <p class="project-desc" id="project-desc"></p>
+</div>
+
+<!-- ABOUT -->
+<div class="view" id="view-about">
+  <h1 class="about-name">Irélio<br><em>Guiamba</em></h1>
+  <p class="about-bio">Sou Irélio Guiamba, filmmaker e editor moçambicano. Trabalho a transformar ideias em imagens que capturam ritmo, cultura e momentos reais.</p>
+  <div class="info-table">
+    <div class="info-row">
+      <span class="info-label">Nome artístico</span>
+      <span class="info-value">DJAMBICEIRO</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Serviços</span>
+      <span class="info-value">Direção · Edição de Vídeo · Cor</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Localização</span>
+      <span class="info-value">Maputo, Moçambique</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Email</span>
+      <span class="info-value"><a href="mailto:contact@djambiceiro.com">contact@djambiceiro.com</a></span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="view" id="view-contact">
+  <h2 class="contact-title">Vamos criar<br><em>algo juntos.</em></h2>
+  <div class="contact-table">
+    <a class="contact-row" href="mailto:contact@djambiceiro.com">
+      <span class="contact-label">Email</span>
+      <div class="contact-val-wrap">
+        <span class="contact-val">contact@djambiceiro.com</span>
+        <span class="contact-arrow">↗</span>
+      </div>
+    </a>
+    <a class="contact-row" href="tel:+258848015441">
+      <span class="contact-label">Telefone</span>
+      <div class="contact-val-wrap">
+        <span class="contact-val">+258 84 801 5441</span>
+        <span class="contact-arrow">↗</span>
+      </div>
+    </a>
+  </div>
+  <div class="socials">
+    <a class="social-link" href="#" target="_blank">Instagram</a>
+    <a class="social-link" href="#" target="_blank">Vimeo</a>
+    <a class="social-link" href="#" target="_blank">YouTube</a>
+    <a class="social-link" href="#" target="_blank">LinkedIn</a>
+  </div>
+</div>
+
+<footer id="footer">
+  <span>© 2025 DJAMBICEIRO</span>
+  <span>Maputo, Moçambique</span>
+</footer>
+
+<script>
+  const catNames = { agencia: 'Agência', solo: 'Solo', content: 'Content Digital' };
+  let allProjects = [];
+  let currentCat = null;
+
+  // Carrega o JSON
+  fetch('projects.json')
+    .then(r => r.json())
+    .then(data => { allProjects = data; })
+    .catch(() => { allProjects = []; });
+
+  // Navegação
+  function go(view, arg) {
+    document.querySelectorAll('.view').forEach(v => {
+      v.classList.remove('active');
+      // reset animação para re-trigger
+      v.style.animation = 'none';
+      v.offsetHeight; // reflow
+      v.style.animation = '';
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+    if (view === 'home') {
+      document.getElementById('view-home').classList.add('active');
+      document.getElementById('nl-work').classList.add('active');
+    } else if (view === 'work') {
+      currentCat = arg;
+      renderGrid(arg);
+      document.getElementById('view-work').classList.add('active');
+      document.getElementById('nl-work').classList.add('active');
+    } else if (view === 'project') {
+      renderProject(arg);
+      document.getElementById('view-project').classList.add('active');
+      document.getElementById('nl-work').classList.add('active');
+    } else if (view === 'about') {
+      document.getElementById('view-about').classList.add('active');
+      document.getElementById('nl-about').classList.add('active');
+    } else if (view === 'contact') {
+      document.getElementById('view-contact').classList.add('active');
+      document.getElementById('nl-contact').classList.add('active');
+    }
+
+    window.scrollTo({ top: 0 });
+  }
+
+  function renderGrid(cat) {
+    const catLabel = catNames[cat] || cat;
+    const titleEl = document.getElementById('work-cat-title');
+    // Título com segundo word em itálico se tiver espaço
+    const words = catLabel.split(' ');
+    titleEl.innerHTML = words.length > 1
+      ? words[0] + ' <em>' + words.slice(1).join(' ') + '</em>'
+      : '<em>' + catLabel + '</em>';
+
+    const filtered = allProjects.filter(p => p.categoria === cat);
+    const grid = document.getElementById('projects-grid');
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p style="padding:40px 32px;color:var(--muted);font-size:0.85rem;">Nenhum projeto nesta categoria ainda.</p>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+      const thumb = p.thumb || (p.youtube ? `https://img.youtube.com/vi/${p.youtube}/maxresdefault.jpg` : '');
+      const thumbHtml = thumb
+        ? `<img src="${thumb}" alt="${p.titulo}" loading="lazy" />`
+        : `<div style="width:100%;height:100%;background:#ccc;"></div>`;
+      return `
+        <div class="project-card" onclick="go('project','${p.id}')">
+          <div class="project-card-thumb">
+            ${thumbHtml}
+            <div class="project-card-hover">
+              <span class="project-card-hover-title">${p.titulo}</span>
+            </div>
+          </div>
+          <div class="project-card-info">
+            <div class="project-card-title">${p.titulo}</div>
+            <div class="project-card-sub">${p.subtitulo || ''}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderProject(id) {
+    const p = allProjects.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById('project-back-label').textContent = catNames[p.categoria] || p.categoria;
+    document.getElementById('project-back').onclick = () => go('work', p.categoria);
+    document.getElementById('project-cat').textContent = catNames[p.categoria] || p.categoria;
+    document.getElementById('project-year').textContent = p.ano || '';
+    document.getElementById('project-title').textContent = p.titulo;
+    document.getElementById('project-desc').textContent = p.descricao || '';
+
+    const videoWrap = document.getElementById('project-video');
+    videoWrap.innerHTML = p.youtube
+      ? `<iframe src="https://www.youtube.com/embed/${p.youtube}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe>`
+      : `<div class="video-placeholder">VÍDEO A ADICIONAR</div>`;
+  }
+
+  // Iniciar na home
+  go('home');
+
+  // Mobile menu
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+    document.body.style.overflow = document.getElementById('mobile-menu').classList.contains('open') ? 'hidden' : '';
+  });
+  function closeMobile() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+</body>
+</html>
